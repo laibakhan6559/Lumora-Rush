@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Lumora Rush – Glide. Grow. Outshine the Void.</title>
+<meta name="description" content="Lumora Rush is a free offline cosmic runner. Guide Lumi the glowing orb through 50 levels, gobble star shards, leap over hazards and unlock skins.">
+<meta name="theme-color" content="#140a33">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lumora Rush">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="game" aria-label="Lumora Rush game"></canvas>
+
+<!-- IN-GAME HUD -->
+<div id="hud" class="hidden">
+  <div class="hud-top">
+    <div class="chip" title="Lumi's size"><svg viewBox="0 0 24 24" class="ic"><path d="M12 1.5l3 7.3 7.5.7-5.7 5 1.8 7.5L12 18l-6.6 4 1.8-7.5-5.7-5 7.5-.7z" fill="#ffd45e" stroke="#fff3b8" stroke-width="1.2" stroke-linejoin="round"/></svg><b id="hud-size">5</b></div>
+    <div class="chip gem" title="Moon crystals"><svg viewBox="0 0 24 24" class="ic"><path d="M3 9l4-5h10l4 5-9 11z" fill="#ff7ac8" stroke="#ffd0ee" stroke-width="1.2" stroke-linejoin="round"/><path d="M3 9h18M9 9l3 11 3-11M7 4l2 5 3-5 3 5 2-5" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width=".9"/></svg><b id="hud-gems">0</b></div>
+    <div class="hud-mid"><div class="lvl-name" id="hud-level">Level 1</div><div class="bar"><i id="hud-bar"></i></div></div>
+    <div id="buffs"></div>
+    <button class="icon-btn" id="btn-pause" aria-label="Pause"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4.2" height="14" rx="1.6" fill="#fff"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.6" fill="#fff"/></svg></button>
+  </div>
+  <div id="hint" class="hint"></div>
+  <button class="jump" id="btn-jump" aria-label="Jump">JUMP</button>
+</div>
+<div id="count" class="count hidden">3</div>
+
+<!-- TITLE -->
+<section class="screen" id="s-title">
+  <div class="top-right"><div class="chip gem"><svg viewBox="0 0 24 24" class="ic"><path d="M3 9l4-5h10l4 5-9 11z" fill="#ff7ac8" stroke="#ffd0ee" stroke-width="1.2" stroke-linejoin="round"/></svg><b class="crystal-count">0</b></div></div>
+  <div class="title-wrap">
+    <canvas id="mascot" class="mascot"></canvas>
+    <h1 class="logo"><span>LUMORA</span><span>RUSH</span></h1>
+    <p class="tag">Glide. Grow. Outshine the void.</p>
+    <div class="menu">
+      <button class="btn primary big" id="b-play">PLAY<small id="play-lv">Level 1</small></button>
+      <div class="row"><button class="btn" id="b-levels">Levels</button><button class="btn" id="b-shop">Skins</button></div>
+      <div class="row"><button class="btn ghost" id="b-how">How to Play</button><button class="btn ghost" id="b-set">Settings</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- LEVEL SELECT -->
+<section class="screen" id="s-levels">
+  <div class="panel wide">
+    <header class="phead"><button class="btn small ghost back" data-back>&#8592; Back</button><h2>Choose Your Orbit</h2><div class="chip gem"><svg viewBox="0 0 24 24" class="ic"><path d="M3 9l4-5h10l4 5-9 11z" fill="#ff7ac8" stroke="#ffd0ee" stroke-width="1.2" stroke-linejoin="round"/></svg><b class="crystal-count">0</b></div></header>
+    <div class="scroll" id="level-grid"></div>
+  </div>
+</section>
+
+<!-- SKINS -->
+<section class="screen" id="s-shop">
+  <div class="panel wide">
+    <header class="phead"><button class="btn small ghost back" data-back>&#8592; Back</button><h2>Lumi Skins</h2><div class="chip gem"><svg viewBox="0 0 24 24" class="ic"><path d="M3 9l4-5h10l4 5-9 11z" fill="#ff7ac8" stroke="#ffd0ee" stroke-width="1.2" stroke-linejoin="round"/></svg><b class="crystal-count">0</b></div></header>
+    <p class="sub">Spend moon crystals to give Lumi a fresh glow.</p>
+    <div class="scroll skin-grid" id="skin-grid"></div>
+  </div>
+</section>
+
+<!-- HOW TO PLAY -->
+<section class="screen" id="s-how">
+  <div class="panel">
+    <header class="phead"><button class="btn small ghost back" data-back>&#8592; Back</button><h2>How to Play</h2><span></span></header>
+    <div class="scroll how">
+      <h3>Your mission</h3>
+      <p>Guide <b>Lumi</b>, a glowing cosmic orb, along the star road. Gobble <b class="gold">star shards</b> to grow bigger, grab <b class="pink">moon crystals</b> to buy skins, and reach the <b class="aqua">Warp Gate</b> at the end of every level. If Lumi's size drops to zero, the light fades.</p>
+      <h3>Controls</h3>
+      <ul class="keys">
+        <li><span>Touch</span> Drag left or right to steer. Swipe up or tap to jump.</li>
+        <li><span>Mouse</span> Click and drag to steer. Click without moving to jump.</li>
+        <li><span>Keyboard</span> <kbd>&#8592;</kbd> <kbd>&#8594;</kbd> or <kbd>A</kbd> <kbd>D</kbd> to steer, <kbd>Space</kbd> or <kbd>&#8593;</kbd> to jump, <kbd>P</kbd> to pause.</li>
+      </ul>
+      <h3>Hazards</h3>
+      <ul class="haz">
+        <li><i class="dot" style="--c:#ff3d8b"></i><b>Crystal walls</b> Slip through the gap. Low bars can be jumped.</li>
+        <li><i class="dot" style="--c:#8a7bb5"></i><b>Asteroids</b> Sweep from side to side. Time your run or leap over.</li>
+        <li><i class="dot" style="--c:#ff6a3d"></i><b>Void gaps</b> The road disappears. Jump to cross.</li>
+        <li><i class="dot" style="--c:#ffd45e"></i><b>Spin blades</b> Wait for a clear moment, or jump the blade.</li>
+        <li><i class="dot" style="--c:#2a1850"></i><b>Black holes</b> They tug Lumi inward. Steer away or jump.</li>
+        <li><i class="dot" style="--c:#ff3b6b"></i><b>Laser gates</b> Beams flash on and off. Jump or pass while they sleep.</li>
+      </ul>
+      <h3>Power-ups</h3>
+      <ul class="haz">
+        <li><i class="dot" style="--c:#6ef3ff"></i><b>Aegis bubble</b> Absorbs one hit.</li>
+        <li><i class="dot" style="--c:#ff5d73"></i><b>Star magnet</b> Pulls nearby shards and crystals for a few seconds.</li>
+      </ul>
+      <p class="note">A hit costs 3 size. Bigger Lumi means a bigger safety cushion, but also a bigger target!</p>
+    </div>
+  </div>
+</section>
+
+<!-- SETTINGS -->
+<section class="screen" id="s-set">
+  <div class="panel">
+    <header class="phead"><button class="btn small ghost back" data-back>&#8592; Back</button><h2>Settings</h2><span></span></header>
+    <div class="scroll">
+      <label class="toggle"><span>Sound effects</span><input type="checkbox" id="t-sfx"><i></i></label>
+      <label class="toggle"><span>Music</span><input type="checkbox" id="t-music"><i></i></label>
+      <label class="toggle"><span>Vibration</span><input type="checkbox" id="t-vib"><i></i></label>
+      <button class="btn wide-btn" id="b-full">Toggle Fullscreen</button>
+      <button class="btn danger wide-btn" id="b-reset">Reset Progress</button>
+      <p class="note">Lumora Rush works offline once it has loaded one time. Your progress is saved on this device.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PAUSE -->
+<section class="screen dim" id="s-pause">
+  <div class="panel narrow center">
+    <h2>Paused</h2>
+    <div class="stack">
+      <button class="btn primary" id="p-resume">Resume</button>
+      <button class="btn" id="p-restart">Restart</button>
+      <button class="btn ghost" id="p-levels">Levels</button>
+      <button class="btn ghost" id="p-home">Main Menu</button>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section class="screen dim" id="s-result">
+  <div class="panel narrow center">
+    <h2 id="r-title">Level Complete!</h2>
+    <p class="sub" id="r-sub"></p>
+    <div class="stars" id="r-stars"><i></i><i></i><i></i></div>
+    <div class="stats" id="r-stats"></div>
+    <div class="stack">
+      <button class="btn primary" id="r-next">Next Level</button>
+      <div class="row"><button class="btn" id="r-retry">Retry</button><button class="btn ghost" id="r-menu">Levels</button></div>
+    </div>
+  </div>
+</section>
+
+<div id="confirm" class="screen dim">
+  <div class="panel narrow center">
+    <h2>Reset progress?</h2>
+    <p class="sub">All levels, stars, crystals and skins on this device will be erased.</p>
+    <div class="row"><button class="btn" id="c-no">Keep it</button><button class="btn danger" id="c-yes">Erase</button></div>
+  </div>
+</div>
+
+<footer id="footer">All rights reserved by LAKhan @2026</footer>
+<noscript><p style="color:#fff;text-align:center;padding:2em">Lumora Rush needs JavaScript to run.</p></noscript>
+<script src="js/levels.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
